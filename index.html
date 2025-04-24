@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checker Site</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -18,11 +19,36 @@
     
     <main class="main-content">
         <div class="hero-content">
-            <h1>Verify if a URL is safe<br>before <span class="highlight">clicking</span></h1>
+            <h1>Verify if content is safe<br>before <span class="highlight">accessing</span></h1>
             
-            <div class="input-group">
-                <input type="url" id="url-input" placeholder="Enter a URL (e.g., https://example.com)" required>
-                <button id="check-button">Check</button>
+            <div class="check-options">
+                <button id="url-tab" class="tab-button active">URL Check</button>
+                <button id="qr-tab" class="tab-button">QR Code Check</button>
+            </div>
+
+            <div id="url-section" class="check-section active">
+                <div class="input-group">
+                    <input type="url" id="url-input" placeholder="Enter a URL (e.g., https://example.com)" required>
+                    <button id="check-button">Check URL</button>
+                </div>
+            </div>
+            
+            <div id="qr-section" class="check-section">
+                <div class="input-group">
+                    <div class="file-upload-container">
+                        <input type="file" id="qr-upload" accept="image/*" required>
+                        <label for="qr-upload">
+                            <div class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            </div>
+                            <span>Upload QR Code Image</span>
+                        </label>
+                    </div>
+                    <div id="qr-preview-container">
+                        <img id="qr-preview" src="#" alt="QR code preview" style="display: none;">
+                    </div>
+                    <button id="scan-button" disabled>Scan QR Code</button>
+                </div>
             </div>
             
             <div id="result"></div>
@@ -32,7 +58,14 @@
     <footer>
         <p>© 2025 Checker Site</p>
     </footer>
-
+    <script>
+        // التحقق من تحميل المكتبة
+        if (typeof jsQR !== 'function') {
+          console.error('jsQR library failed to load');
+        }
+      </script>  
+       
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js" integrity="sha512-1I3FwM0iC29rKTXVQ3PXMt8g/QmPK8aH6xT2pbOXvDWQtjRsGOlmBoYr/3ZWTnduo/YxhH+YJljlp+K+fUwdQ==" crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
 </html>

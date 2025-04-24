@@ -1,8 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // UI Elements
     const urlInput = document.getElementById('url-input');
     const checkButton = document.getElementById('check-button');
     const resultDiv = document.getElementById('result');
+    const urlTab = document.getElementById('url-tab');
+    const qrTab = document.getElementById('qr-tab');
+    const urlSection = document.getElementById('url-section');
+    const qrSection = document.getElementById('qr-section');
+    const qrUpload = document.getElementById('qr-upload');
+    const qrPreview = document.getElementById('qr-preview');
+    const scanButton = document.getElementById('scan-button');
     
+    // Tab switching functionality
+    urlTab.addEventListener('click', () => {
+        urlTab.classList.add('active');
+        qrTab.classList.remove('active');
+        urlSection.classList.add('active');
+        qrSection.classList.remove('active');
+        resultDiv.style.display = 'none';
+    });
+    
+    qrTab.addEventListener('click', () => {
+        qrTab.classList.add('active');
+        urlTab.classList.remove('active');
+        qrSection.classList.add('active');
+        urlSection.classList.remove('active');
+        resultDiv.style.display = 'none';
+    });
+    
+    // URL checking functionality
     checkButton.addEventListener('click', () => {
         checkLink();
     });
@@ -33,8 +59,126 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Reset button state
             checkButton.disabled = false;
-            checkButton.textContent = 'Check';
+            checkButton.textContent = 'Check URL';
         }, 1500);
+    }
+    
+    // QR Code functionality
+    qrUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                qrPreview.src = event.target.result;
+                qrPreview.style.display = 'block';
+                scanButton.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    scanButton.addEventListener('click', () => {
+        scanQRCode();
+    });
+    
+    function scanQRCode() {
+        try {
+            // Show loading state
+            scanButton.disabled = true;
+            scanButton.textContent = 'Scanning...';
+            resultDiv.style.display = 'none';
+            
+            // Verify if jsQR library is loaded
+            if (typeof jsQR !== 'function') {
+                throw new Error('jsQR library not loaded properly');
+            }
+            
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.src = qrPreview.src;
+            
+            img.onload = () => {
+                try {
+                    // Create a canvas to draw the image for scanning
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    
+                    // Set canvas dimensions to match image
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+                    
+                    // Draw image to canvas
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Get image data for QR scanning
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    
+                    // Process results after a short delay to show scanning animation
+                    setTimeout(() => {
+                        try {
+                            // Use jsQR library to decode the QR code
+                            const code = jsQR(imageData.data, imageData.width, imageData.height);
+                            
+                            if (code && code.data) {
+                                // QR Code contains a URL, analyze it
+                                if (isValidURL(code.data)) {
+                                    const result = analyzeURL(code.data);
+                                    result.message = `QR Code contains URL: ${code.data}<br>${result.message}`;
+                                    displayResult(result);
+                                } else {
+                                    // QR Code contains text, just display it
+                                    displayResult({
+                                        status: 'warning',
+                                        title: 'QR Code Content',
+                                        message: `QR Code contains text: ${code.data}`
+                                    });
+                                }
+                            } else {
+                                displayResult({
+                                    status: 'warning',
+                                    title: 'Scanning Failed',
+                                    message: 'Could not detect a valid QR code in the image.'
+                                });
+                            }
+                        } catch (scanError) {
+                            console.error('QR Scanning error:', scanError);
+                            displayResult({
+                                status: 'warning',
+                                title: 'Scanning Error',
+                                message: 'An error occurred while processing the QR code.'
+                            });
+                        } finally {
+                            // Always reset button state
+                            scanButton.disabled = false;
+                            scanButton.textContent = 'Scan QR Code';
+                        }
+                    }, 1000);
+                    
+                } catch (canvasError) {
+                    console.error('Canvas error:', canvasError);
+                    handleQRError('Failed to process image');
+                }
+            };
+            
+            img.onerror = () => {
+                handleQRError('Failed to load image');
+            };
+            
+        } catch (error) {
+            console.error('QR function error:', error);
+            handleQRError('QR scanning functionality unavailable');
+        }
+    }
+    
+    function handleQRError(message) {
+        displayResult({
+            status: 'warning',
+            title: 'Error',
+            message: message
+        });
+        
+        scanButton.disabled = false;
+        scanButton.textContent = 'Scan QR Code';
     }
     
     function analyzeURL(url) {

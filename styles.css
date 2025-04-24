@@ -61,6 +61,42 @@ h1 {
     font-weight: bold;
 }
 
+/* Tab options */
+.check-options {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab-button {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab-button.active {
+    color: white;
+    border-bottom: 3px solid #4CAF50;
+}
+
+.tab-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Check sections */
+.check-section {
+    display: none;
+}
+
+.check-section.active {
+    display: block;
+}
+
 /* Input group */
 .input-group {
     margin: 20px -80px 20px -80px;
@@ -100,6 +136,62 @@ button {
 
 button:hover {
     background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #4CAF5080;
+    cursor: not-allowed;
+}
+
+/* QR code upload styling */
+.file-upload-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+input[type="file"] {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.file-upload-container label {
+    width: 100%;
+    padding: 15px;
+    border-radius: 500px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.file-upload-container label:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.upload-icon {
+    margin-right: 10px;
+}
+
+#qr-preview-container {
+    text-align: center;
+    margin: 15px 0;
+}
+
+#qr-preview {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Result styles */
